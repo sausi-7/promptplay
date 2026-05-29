@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for generating games from natural language prompts
 - Python virtual environment setup
 - Environment variable configuration support
+- Test suite for `agent` module (`tests/test_agent.py`) with 5 tests covering import, async query, and ClaudeAgentOptions initialization
 
 ### Coming Soon
 - Web UI for interactive prompt input
