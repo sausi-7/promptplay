@@ -101,14 +101,14 @@ not just what changed. Reference issues with #123.
 
 ### Testing
 
-Before submitting:
-```bash
-# Test that the code runs
-python agent.py
+Before submitting, run the full test suite:
 
-# Check for import errors
-python -c "import agent; print('✓ No import errors')"
+```bash
+pip install pytest pytest-mock pytest-asyncio
+pytest tests/test_agent.py -v
 ```
+
+All 5 tests should pass. No API key is required — all Claude API calls are mocked.
 
 ## Submitting a Pull Request
 
