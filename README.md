@@ -12,19 +12,35 @@ promptplay is a creative playground that leverages the [Claude Agent SDK](https:
 
 ## How It Works
 
+### Web Interface (Recommended)
 ```
-Your Prompt
+Your Game Idea
     ↓
-Claude Agent SDK
+Web Form (index.html)
     ↓
-Claude Code (with Bash & file tools)
+/generate endpoint (server.py)
     ↓
-Game Code (HTML/JavaScript)
+Claude Agent SDK generates HTML/CSS/JS
     ↓
-Playable Game 🎮
+Saved to output.html
+    ↓
+Rendered in iframe on page 🎮
 ```
 
-The magic happens through multi-step agent interactions: Claude reads your prompt, executes code, and iterates until it delivers a complete, working game.
+### CLI Mode
+```
+Edit agent.py with your game idea
+    ↓
+python agent.py
+    ↓
+Claude generates complete game code
+    ↓
+Saved to output.html
+    ↓
+Open in browser 🎮
+```
+
+The agent automatically wraps your game idea with strict instructions to ensure Claude returns only clean HTML/CSS/JavaScript code without explanations or tool usage.
 
 ## Quick Start
 
@@ -54,15 +70,23 @@ cp .env.example .env
 
 ### Running
 
+#### Option 1: Web Server (Recommended)
+
+Start the FastAPI server:
 ```bash
-python agent.py
+python server.py
+# Server runs on http://localhost:8000
 ```
 
-The script will print the generated game code to stdout. You can redirect it to a file:
+Open your browser and describe your game idea. The generated game will render instantly in the page.
 
+#### Option 2: Command Line
+
+Edit the game idea in `agent.py` and run:
 ```bash
-python agent.py > my_game.html
-open my_game.html
+python agent.py
+# Generates output.html
+open output.html
 ```
 
 ## Examples
@@ -76,41 +100,62 @@ Try these prompts by editing the `prompt` string in `agent.py`:
 | `"Build a memory matching card game"` | Click-to-flip matching game |
 | `"Make a simple Pong game"` | Two-player paddle game |
 
-## Extending It
+## Architecture
 
-### Change the Prompt
+### Key Components
 
-Edit the `prompt` parameter in `agent.py`:
+- **agent.py** - Core game generation using Claude Agent SDK
+  - `build_prompt()` - Wraps user ideas with strict instructions to ensure HTML-only output
+  - `generate_game_html()` - Calls Claude to generate complete game code
+  - `htmlParser()` - Extracts clean HTML from Claude's response
+  
+- **server.py** - FastAPI web server with two endpoints
+  - `POST /generate` - Accepts a game idea, runs the agent, returns success/failure
+  - `GET /game` - Serves the generated `output.html` file
+  - `GET /` - Serves the web UI
+  
+- **index.html** - Web interface for submitting game ideas
+  - Form for entering game descriptions
+  - Iframe rendering of generated games
+  - Error handling and loading states
+
+## Customization
+
+### Change the Game Idea (CLI)
+
+Edit the `game_idea` in `agent.py`:
 
 ```python
-prompt="Your game idea here"
+game_idea = "Your detailed game description here"
+html = await generate_game_html(game_idea)
 ```
 
 ### Adjust the Model
 
-Use a different Claude model by changing the `model` parameter:
+Change the `model` parameter in `agent.py`:
 
 ```python
-model="claude-opus-4-7"  # For more complex games
-model="claude-haiku-4-5-20251001"  # For quick, lightweight games
+model="claude-opus-4-8"      # For complex/3D games
+model="claude-sonnet-4-6"    # Balanced performance
+model="claude-haiku-4-5-20251001"  # Fast, lightweight
 ```
 
-### Enable More Tools
+### Modify Prompt Instructions
 
-The SDK can use additional tools. Extend `allowed_tools` in `agent.py`:
-
-```python
-allowed_tools=["Bash", "Glob", "Read", "Write"]
-```
+Edit `build_prompt()` in `agent.py` to customize how game ideas are converted to instructions.
 
 ## Roadmap
 
-- [ ] Web UI to input prompts and play games directly
+- [x] Web UI to input prompts and play games directly
+- [x] FastAPI server with endpoints for game generation
+- [x] Iframe-based game rendering (no popup blockers)
 - [ ] Multi-file game support (separate HTML, CSS, JS)
 - [ ] Prompt gallery: community-submitted game ideas
 - [ ] CLI flags to customize model, effort, and output
 - [ ] Game examples directory with pre-generated games
 - [ ] Streaming output for real-time generation feedback
+- [ ] Game save/download functionality
+- [ ] Share generated games via URL
 
 ## Contributing
 
