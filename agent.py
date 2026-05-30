@@ -18,7 +18,9 @@ async def main():
         
         if hasattr(message, "result"):
             html = htmlParser(message.result)
-            print(html)
+            with open("output.html", "w") as f:
+                f.write(html)
+            print("✓ Game saved to output.html")
 
 def htmlParser(result: str) -> str:
     """Extract HTML from markdown code blocks."""
