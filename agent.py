@@ -27,10 +27,21 @@ def htmlParser(result: str) -> str:
 def build_prompt(game_idea: str) -> str:
     """Wrap a raw game idea with strict instructions so the model returns only HTML."""
     return (
-        f"Write a complete, single-file HTML/CSS/JavaScript game based on this idea: {game_idea}. "
-        "Put all HTML, CSS, and JavaScript in one file. "
-        "Return ONLY the HTML code wrapped in ```html code blocks, with no other text, "
-        "no explanations, and no tool usage."
+        f"Create a complete, playable, single-file HTML/CSS/JavaScript game.\n\n"
+        f"Game Idea: {game_idea}\n\n"
+        f"Requirements:\n"
+        f"1. Embed ALL code (HTML, CSS, JavaScript) in a single file\n"
+        f"2. Use HTML5 doctype and semantic structure\n"
+        f"3. Make it fully playable - no broken features\n"
+        f"4. Include clear instructions or tutorial for the player\n"
+        f"5. Add a reset/restart button\n"
+        f"6. Keep total file size under 100KB\n"
+        f"7. Make it responsive - works on desktop and mobile\n"
+        f"8. Use keyboard controls or mouse clicks (clearly labeled)\n"
+        f"9. Include visual feedback (colors, animations, sounds if appropriate)\n"
+        f"10. Add a score/level system if relevant to the game type\n\n"
+        f"Output: Return ONLY the complete HTML code wrapped in ```html code blocks.\n"
+        f"No explanations, no markdown text before/after, no tool usage."
     )
 
 
