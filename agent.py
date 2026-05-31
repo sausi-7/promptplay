@@ -35,7 +35,6 @@ def build_prompt(game_idea: str) -> str:
         f"3. Make it fully playable - no broken features\n"
         f"4. Include clear instructions or tutorial for the player\n"
         f"5. Add a reset/restart button\n"
-        f"6. Keep total file size under 100KB\n"
         f"7. Make it responsive - works on desktop and mobile\n"
         f"8. Use keyboard controls or mouse clicks (clearly labeled)\n"
         f"9. Include visual feedback (colors, animations, sounds if appropriate)\n"
