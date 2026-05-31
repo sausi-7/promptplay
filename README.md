@@ -80,18 +80,56 @@ python server.py
 
 Open your browser and describe your game idea. The generated game will render instantly in the page.
 
-#### Option 2: Command Line
+#### Option 2a: Command Line - Quick Mode
 
 Edit the game idea in `agent.py` and run:
 ```bash
 python agent.py
-# Generates output.html
+# Generates output.html instantly
 open output.html
+```
+
+#### Option 2b: Command Line - Conversational Mode (Recommended)
+
+For better games with clarifications:
+```bash
+python conversation_agent.py
+# Interactive mode:
+# 1. Describe your game idea
+# 2. Answer Claude's clarifying questions  
+# 3. Get a tailored game
+# 4. Request refinements if needed
+# 5. Save with full conversation memory
+```
+
+## Game Generation Modes
+
+### One-Shot Mode (`agent.py`)
+- ⚡ **Fast**: 5-10 seconds
+- 🎯 **Simple**: Just edit and run
+- 📝 **Use when**: You have a clear idea and want it quickly
+- 🔄 **Can't iterate**: One generation per run
+
+### Conversational Mode (`conversation_agent.py`) ⭐ Recommended
+- 💬 **Interactive**: Claude asks clarifying questions
+- 🎮 **Better quality**: Games tailored to your specs
+- 🔧 **Refinable**: Ask for changes, get improved versions
+- 📚 **Memory**: Full conversation saved as JSON
+- ⏱️ **Takes**: 30-60 seconds + optional refinements
+
+**Example Conversational Flow:**
+```
+You: "Make a puzzle game"
+Claude: "What type of puzzle? (sliding, matching, word, logic?)"
+You: "Matching cards with difficulty levels"
+Claude: "Generated! Try it."
+You: "Make it harder - fewer cards to match"
+Claude: "Refined! Check it out."
 ```
 
 ## Examples
 
-Try these prompts by editing the `prompt` string in `agent.py`:
+Try these prompts by editing the `game_idea` string in `agent.py` (one-shot) or describing them to `conversation_agent.py` (conversational):
 
 | Prompt | Output |
 |--------|--------|

@@ -30,13 +30,28 @@ python server.py
 # Open http://localhost:8000 in browser and enter your game idea
 ```
 
-### Running CLI (without web server)
+### Running CLI - Quick Mode (One-Shot)
 ```bash
 # Edit game_idea in agent.py, then:
 python agent.py
 
 # This generates output.html, open it:
 open output.html
+```
+
+### Running CLI - Conversational Mode (Recommended)
+```bash
+# Interactive mode with clarifying questions:
+python conversation_agent.py
+
+# You'll be prompted to:
+# 1. Describe your game idea
+# 2. Answer Claude's clarifying questions
+# 3. Review the generated game
+# 4. Request refinements if needed (optional)
+# 5. Save the final game
+
+# Your conversation is saved to games/{game_id}_memory.json
 ```
 
 ### Code Quality
@@ -58,7 +73,20 @@ The project has three main components:
 - **`generate_game_html(game_idea)`**: Calls the Claude Agent SDK's `query()` function with the wrapped prompt
 - **`htmlParser(result)`**: Extracts clean HTML from Claude's response (prioritizes html-tagged code blocks)
 - **`main()`**: CLI entry point that writes the generated game to `output.html`
-- Uses Haiku model by default for speed; no tools enabled (`allowed_tools=[]`) since the agent just generates code
+- **Mode**: One-shot generation (quick, no iterations)
+- Uses Haiku model by default for speed; no tools enabled (`allowed_tools=[]`)
+
+### conversation_agent.py
+- **`ConversationMemory`**: Stores conversation history in JSON format (`games/{game_id}_memory.json`)
+  - Tracks game idea, clarifications, generations, and refinements
+- **`build_clarification_prompt()`**: Generates prompt for Claude to ask smart clarifying questions
+- **`build_generation_prompt()`**: Generates final game based on all collected info
+- **`build_refinement_prompt()`**: Generates improved version based on user feedback
+- **`ask_clarifications()`**: Interactive Q&A with Claude about the game
+- **`generate_game()`**: Creates initial game with clarifications
+- **`refine_game()`**: Iterative refinement loop for user feedback
+- **Mode**: Conversational with memory (slower, higher quality, allows iterations)
+- Uses Haiku model; perfect for exploring game ideas before committing
 
 ### server.py
 - **FastAPI application** that provides a web interface for game generation
@@ -105,12 +133,33 @@ The project has three main components:
 - Tests verify: imports work, ruff linting passes
 - No dedicated test suite yet (see CONTRIBUTING.md for good first issues)
 
+## Two Modes Explained
+
+### Mode 1: One-Shot (agent.py)
+- **Best for**: Quick iterations, CLI scripts, simple games
+- **Process**: Idea → Generate → Done
+- **Time**: ~5-10 seconds
+- **Quality**: Good (follows 10 requirements)
+
+### Mode 2: Conversational (conversation_agent.py)
+- **Best for**: Refining game ideas, building exactly what you want, exploring possibilities
+- **Process**: Idea → Clarifying Q&A → Generate → Refine → Refine → Done
+- **Time**: ~30-60 seconds + refinement time
+- **Quality**: Excellent (tailored to your specifications)
+- **Memory**: Full conversation saved for reference
+
 ## Key Files
 
-- `agent.py` – Core game generation using Claude Agent SDK
+- `agent.py` – One-shot game generation using Claude Agent SDK
   - `build_prompt()` – Wraps game ideas with strict instructions
   - `generate_game_html()` – Async function that calls Claude
   - `htmlParser()` – Extracts HTML from Claude's response
+
+- `conversation_agent.py` – Conversational game generation with memory
+  - `ConversationMemory` – Stores all conversation history
+  - `ask_clarifications()` – Claude asks smart questions
+  - `generate_game()` – Creates game based on answers
+  - `refine_game()` – Iterative refinement loop
   
 - `server.py` – FastAPI web server
   - `POST /generate` – Game generation endpoint
