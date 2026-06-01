@@ -89,7 +89,7 @@ def build_clarification_prompt(game_idea: str) -> str:
     """Build prompt for Claude to ask clarifying questions."""
     return (
         f"A user wants to create a game with this idea: {game_idea}\n\n"
-        f"Ask 3-4 clarifying questions to better understand their vision. "
+        f"Ask 3-4 clarifying questions to better understand their vision only when needed. "
         f"Ask about:\n"
         f"- Difficulty/complexity level\n"
         f"- Key gameplay mechanics or features\n"
