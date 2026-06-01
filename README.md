@@ -82,12 +82,14 @@ Open your browser and describe your game idea. The generated game will render in
 
 #### Option 2a: Command Line - Quick Mode
 
-Edit the game idea in `agent.py` and run:
+Pass a game idea directly or use the default tic-tac-toe prompt:
 ```bash
-python agent.py
-# Generates output.html instantly
+python agent.py "A cozy memory card game with three difficulty levels" --output output.html
+# Streams progress and generated code, then saves output.html
 open output.html
 ```
+
+Use `--verbose` to include detailed stream logs while Claude is generating.
 
 #### Option 2b: Command Line - Conversational Mode (Recommended)
 
@@ -107,6 +109,7 @@ python conversation_agent.py
 ### One-Shot Mode (`agent.py`)
 - ⚡ **Fast**: 5-10 seconds
 - 🎯 **Simple**: Just edit and run
+- 📡 **Streaming**: Shows progress and generated code as it arrives
 - 📝 **Use when**: You have a clear idea and want it quickly
 - 🔄 **Can't iterate**: One generation per run
 
