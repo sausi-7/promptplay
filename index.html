@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptPlay - Game Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error {
+            color: #e74c3c;
+            padding: 12px;
+            background: #fadbd8;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .questions-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .questions-box p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .questions-box strong {
+            color: #667eea;
+        }
+
+        .answers-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            margin-top: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .answers-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .refinement-section {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .refinement-section.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .button-group button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .button-group button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 2px solid #eee;
+        }
+
+        .footer-links a {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .footer-links a:hover {
+            transform: translateY(-2px);
+        }
+
+        .footer-links a.try-games {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .footer-links a.repo {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .footer-links a.repo:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 PromptPlay</h1>
+        <p class="subtitle">Turn your game ideas into playable games</p>
+
+        <!-- Tab Buttons -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="quick">⚡ Quick Generate</button>
+            <button class="tab-btn" data-tab="conversational">💬 Conversational</button>
+        </div>
+
+        <!-- Quick Generate Tab -->
+        <div id="quick" class="tab-content active">
+            <form id="gameForm">
+                <div class="form-group">
+                    <label for="gameIdea">Describe your game idea:</label>
+                    <textarea
+                        id="gameIdea"
+                        name="gameIdea"
+                        placeholder="e.g., Build me a Tetris game in HTML/CSS/JavaScript..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn">Generate Game</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <p>⏳ Generating your game... This may take a moment...</p>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <iframe
+                id="gameFrame"
+                title="Generated game"
+                style="display:none; width:100%; height:600px; border:2px solid #ddd; border-radius:5px; margin-top:20px;"
+            ></iframe>
+        </div>
+
+        <!-- Conversational Tab -->
+        <div id="conversational" class="tab-content">
+            <form id="conversationalForm">
+                <div class="form-group">
+                    <label for="convGameIdea">Describe your game idea:</label>
+                    <textarea
+                        id="convGameIdea"
+                        placeholder="e.g., A puzzle game with different difficulty levels..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" id="startConvBtn">Get Clarifying Questions</button>
+            </form>
+
+            <div class="loading" id="convLoading">
+                <p>⏳ Getting clarifying questions...</p>
+            </div>
+
+            <!-- Questions Display -->
+            <div id="questionsSection" style="display: none;">
+                <div class="questions-box" id="questionsBox"></div>
+
+                <div class="form-group">
+                    <label for="answersInput">Your answers:</label>
+                    <textarea
+                        id="answersInput"
+                        class="answers-input"
+                        placeholder="Answer the questions above to help us generate the perfect game for you..."
+                    ></textarea>
+                </div>
+
+                <button type="button" id="generateBtn" class="button-group" style="width: 100%;">Generate Game</button>
+            </div>
+
+            <!-- Refinement Section -->
+            <div id="refinementSection" class="refinement-section">
+                <div class="form-group">
+                    <label for="refinementInput">What should we improve?</label>
+                    <textarea
+                        id="refinementInput"
+                        class="answers-input"
+                        placeholder="e.g., Make it harder, add more colors, change the theme..."
+                    ></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" id="refineBtn">Refine Game</button>
+                    <button type="button" class="secondary" id="newGameBtn">New Game</button>
+                </div>
+            </div>
+
+            <div class="error" id="convError"></div>
+
+            <iframe
+                id="convGameFrame"
+                title="Generated game"
+                style="display:none; width:100%; height:600px; border:2px solid #ddd; border-radius:5px; margin-top:20px;"
+            ></iframe>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="footer-links">
+            <a class="try-games" href="https://sausi-7.github.io/games/" target="_blank" rel="noopener noreferrer">🎮 Try Games</a>
+            <a class="repo" href="https://github.com/sausi-7/games" target="_blank" rel="noopener noreferrer">⭐ Contribute on GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+
+                // Show selected tab
+                document.getElementById(tabName).classList.add('active');
+                btn.classList.add('active');
+            });
+        });
+
+        // ===== QUICK GENERATE MODE =====
+        document.getElementById('gameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const gameIdea = document.getElementById('gameIdea').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_idea: gameIdea })
+                });
+
+                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Game generation failed');
+
+                const frame = document.getElementById('gameFrame');
+                frame.src = '/game?t=' + Date.now();
+                frame.style.display = 'block';
+                frame.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // ===== CONVERSATIONAL MODE =====
+        let currentSessionId = null;
+
+        document.getElementById('conversationalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const gameIdea = document.getElementById('convGameIdea').value;
+            const loading = document.getElementById('convLoading');
+            const errorDiv = document.getElementById('convError');
+            const startBtn = document.getElementById('startConvBtn');
+
+            errorDiv.style.display = 'none';
+            loading.style.display = 'block';
+            startBtn.disabled = true;
+
+            try {
+                const response = await fetch('/conversation/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_idea: gameIdea })
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to get questions');
+
+                currentSessionId = data.session_id;
+
+                // Display questions
+                document.getElementById('questionsBox').innerHTML = `<p>${data.questions}</p>`;
+                document.getElementById('questionsSection').style.display = 'block';
+                document.getElementById('conversationalForm').style.display = 'none';
+
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                startBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const answers = document.getElementById('answersInput').value;
+            const loading = document.getElementById('convLoading');
+            const errorDiv = document.getElementById('convError');
+
+            if (!answers.trim()) {
+                errorDiv.textContent = 'Please provide answers to the questions';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/conversation/answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        answers: answers
+                    })
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Game generation failed');
+
+                // Show game and refinement section
+                document.getElementById('questionsSection').style.display = 'none';
+                document.getElementById('refinementSection').classList.add('show');
+
+                const frame = document.getElementById('convGameFrame');
+                frame.src = '/game?t=' + Date.now();
+                frame.style.display = 'block';
+                frame.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        document.getElementById('refineBtn').addEventListener('click', async () => {
+            const refinement = document.getElementById('refinementInput').value;
+            const loading = document.getElementById('convLoading');
+            const errorDiv = document.getElementById('convError');
+
+            if (!refinement.trim()) {
+                errorDiv.textContent = 'Please specify what you want to improve';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/conversation/refine', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        refinement: refinement
+                    })
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Refinement failed');
+
+                // Reload game
+                const frame = document.getElementById('convGameFrame');
+                frame.src = '/game?t=' + Date.now();
+
+                // Clear refinement input
+                document.getElementById('refinementInput').value = '';
+
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        document.getElementById('newGameBtn').addEventListener('click', () => {
+            // Reset conversational mode
+            currentSessionId = null;
+            document.getElementById('convGameIdea').value = '';
+            document.getElementById('answersInput').value = '';
+            document.getElementById('refinementInput').value = '';
+            document.getElementById('questionsSection').style.display = 'none';
+            document.getElementById('refinementSection').classList.remove('show');
+            document.getElementById('conversationalForm').style.display = 'block';
+            document.getElementById('convGameFrame').style.display = 'none';
+            document.getElementById('convError').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -39,6 +39,7 @@ ENV/
 
 # Generated outputs
 *.html
+!index.html
 output/
 
 # OS
